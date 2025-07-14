@@ -20,43 +20,51 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="container mt-5">
-      <div className="mb-3">
-        <label htmlFor="username" className="form-label">Username</label>
-        <input
-          type="text"
-          className="form-control"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </div>
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="shadow p-5 rounded-4 bg-white" style={{ width: '900px' }}
+>
+        <h3 className="text-center mb-4">เข้าสู่ระบบ</h3>
 
-      <div className="mb-3">
-        <label htmlFor="password" className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-control"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">Username</label>
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="กรอกชื่อผู้ใช้"
+            />
+          </div>
 
-      <div className="mb-3 form-check">
-        <input type="checkbox" className="form-check-input" id="rememberMe" />
-        <label className="form-check-label" htmlFor="rememberMe">จำฉันไว้</label>
-      </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="กรอกรหัสผ่าน"
+            />
+          </div>
 
-      <center>
-        <button type="submit" className="btn btn-primary">Login</button>
-      </center>
+          <div className="mb-3 form-check">
+            <input type="checkbox" className="form-check-input" id="rememberMe" />
+            <label className="form-check-label" htmlFor="rememberMe">จำฉันไว้</label>
+          </div>
 
-      <div className="col mt-3 text-center">
-        <Link href="/Register" className="text-muted me-3">สมัครสมาชิก</Link>
-        <Link href="/forgot-password" className="text-muted">ลืมรหัสผ่าน?</Link>
+          <div className="d-grid">
+            <button type="submit" className="btn btn-primary">Login</button>
+          </div>
+        </form>
+
+        <div className="text-center mt-3">
+          <Link href="/Register" className="text-decoration-none me-3">สมัครสมาชิก</Link>
+          <Link href="/forgot-password" className="text-decoration-none">ลืมรหัสผ่าน?</Link>
+        </div>
       </div>
-    </form>
+    </div>
   );
 }
-
