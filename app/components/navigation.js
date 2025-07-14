@@ -33,10 +33,13 @@ export default function Navbar() {
         <li className="nav-item">
           <Link href="/contact" className="nav-link" aria-disabled="true">ติดต่อเรา</Link>
         </li>
+          <li className="nav-item">
+          <Link href="/Login" className="nav-link" aria-disabled="true">เข้าสู่ระบบ</Link>
+        </li>
       </ul>
       <form className="d-flex" role="search">
         <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-        <button className="btn btn-outline-warning" type="submit">Search</button>
+        <button className="btn btn-outline-warning" type="submit">ค้นหา</button>
       </form>
     </div>
   </div>
