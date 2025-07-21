@@ -1,9 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
-
 export default function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#34495e" }}>
+    <nav
+      className="navbar navbar-expand-lg navbar-dark fixed-top"
+      style={{ backgroundColor: "#34495e" }}
+    >
       <div className="container-fluid">
         <Link href="/" className="navbar-brand d-flex align-items-center gap-2">
           <img
@@ -34,7 +35,7 @@ export default function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" href="/about">
+              <Link className="nav-link" href="about">
                 เกี่ยวกับเรา
               </Link>
             </li>
@@ -50,12 +51,12 @@ export default function Navbar() {
               </Link>
               <ul className="dropdown-menu">
                 <li>
-                  <Link className="dropdown-item" href="/service">
+                  <Link className="dropdown-item" href="service">
                     ติดต่อเรา
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" href="/service">
+                  <Link className="dropdown-item" href="service">
                     ติดต่อ ด้านอื่นๆ
                   </Link>
                 </li>
@@ -63,14 +64,14 @@ export default function Navbar() {
                   <hr className="dropdown-divider" />
                 </li>
                 <li>
-                  <Link className="dropdown-item" href="/service">
+                  <Link className="dropdown-item" href="service">
                     สอบถามเกียวกับปัญหา
                   </Link>
                 </li>
               </ul>
             </li>
             <li className="nav-item">
-              <Link href="/contact" className="nav-link" aria-disabled="true">
+              <Link href="contact" className="nav-link" aria-disabled="true">
                 ติดต่อเรา
               </Link>
             </li>
@@ -88,7 +89,6 @@ export default function Navbar() {
             </button>
           </form>
 
-          {/* ปุ่ม Login ลิงก์ไปหน้า /login */}
           <Link href="/Login">
             <button className="btn btn-primary ms-3">Login</button>
           </Link>
