@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#34495e" }}>
       <div className="container-fluid">
         <Link href="/" className="navbar-brand d-flex align-items-center gap-2">
           <img
