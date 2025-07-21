@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
 <nav className="navbar navbar-expand-lg bg-body-tertiary">
   <div className="container-fluid">
-  <Link href="/" className="navbar-brand d-flex align-items-center gap-2"><img src="/bootstrap-logo.svg" alt="Logo" width={30} height={24} className="d-inline-block align-text-top" /> FrontEnd</Link>
+  <Link href="/" className="navbar-brand d-flex align-items-center gap-2"><img src="/a3.jpg" alt="Logo" width={30} height={24} className="d-inline-block align-text-top" /> AAA</Link>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon" />
     </button>
