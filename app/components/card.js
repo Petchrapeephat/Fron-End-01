@@ -4,7 +4,7 @@ export default function Card() {
       <div className="row">
         <div className="col-md-12 text-center mb-4">
             <br></br>
-          <h3>Our Project</h3>
+          <h3>กิจกรรมที่เกี่ยวข้อง</h3>
         </div>
       </div>
 
