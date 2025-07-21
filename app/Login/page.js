@@ -12,7 +12,7 @@ export default function LoginPage() {
     alert(`Username: ${username}\nPassword: ${password}\nRemember me: ${remember}`);
   };
 
-  return (
+  return (<div style={{ paddingTop: '70px' }}>
     <div className="container mt-5" style={{ maxWidth: "400px" }}>
       <h1 className="text-center mb-4">Login</h1>
 
@@ -60,6 +60,7 @@ export default function LoginPage() {
       <div className="mt-3 text-center">
         <Link href="/register" className="me-3">สมัครสมาชิก</Link> | <Link href="/forgot-password">ลืมรหัสผ่าน</Link>
       </div>
+    </div>
     </div>
   );
 }
