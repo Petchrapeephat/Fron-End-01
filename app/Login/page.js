@@ -58,7 +58,7 @@ export default function LoginPage() {
       </form>
 
       <div className="mt-3 text-center">
-        <Link href="/register" className="me-3">สมัครสมาชิก</Link> | <Link href="/forgot-password">ลืมรหัสผ่าน</Link>
+        <Link href="/Register" className="me-3">สมัครสมาชิก</Link> | <Link href="/forgot-password">ลืมรหัสผ่าน</Link>
       </div>
     </div>
     </div>
