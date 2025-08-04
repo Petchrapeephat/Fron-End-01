@@ -1,200 +1,203 @@
-"use client";
-
-import { useState } from "react";
+'use client'
+import { useState } from 'react'
+import Swal from 'sweetalert2'
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    prefix: "",
-    firstName: "",
-    lastName: "",
-    address: "",
-    gender: "",
-    birthdate: "",
-    acceptTerms: false,
-  });
+  const [firstname, setFirstname] = useState('')
+  const [fullname, setFullname] = useState('')
+  const [lastname, setLastname] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [address, setAddress] = useState('')
+  const [gender, setGender] = useState('')
+  const [birthdate, setBirthdate] = useState('')
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.acceptTerms) {
-      alert("กรุณายอมรับเงื่อนไขก่อนสมัครสมาชิก");
-      return;
+  // แปลงปี พ.ศ. เป็น ค.ศ. (ถ้ามี)
+  const convertThaiDateToISO = (thaiDate) => {
+    if (!thaiDate) return ''
+    const [year, month, day] = thaiDate.split('-')
+    let westernYear = parseInt(year, 10)
+    if (westernYear > 2400) {
+      westernYear -= 543
     }
-    alert("สมัครสมาชิกเรียบร้อย!\n" + JSON.stringify(formData, null, 2));
-    // ที่นี่ใส่ logic ส่งข้อมูลไป backend หรือ API ได้เลย
-  };
+    return `${westernYear.toString().padStart(4, '0')}-${month}-${day}`
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!firstname || !lastname || !username || !password || !gender || !birthdate) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      })
+      return
+    }
+
+    try {
+      const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          firstname,
+          fullname,
+          lastname,
+          username,
+          password,
+          address,
+          sex: gender,
+          birthday: convertThaiDateToISO(birthdate), // ส่งแบบแปลงแล้ว
+        }),
+      })
+
+      const result = await res.json()
+      console.log('API response after register:', result)
+      
+
+      if (!res.ok) {
+        throw new Error(result.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก')
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'สมัครสมาชิกสำเร็จ!',
+        text: result.message || 'ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว',
+      })
+
+      // Reset form
+      setFirstname('')
+      setFullname('')
+      setLastname('')
+      setUsername('')
+      setPassword('')
+      setAddress('')
+      setGender('')
+      setBirthdate('')
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: err.message,
+      })
+    }
+  }
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "500px" }}>
-      <h1 className="text-center mb-4">สมัครสมาชิก</h1>
-      <form onSubmit={handleSubmit}>
-
-        {/* ชื่อผู้ใช้ */}
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">ชื่อผู้ใช้</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            className="form-control"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            placeholder="กรุณากรอกชื่อผู้ใช้"
-          />
-        </div>
-
-        {/* รหัสผ่าน */}
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">รหัสผ่าน</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="form-control"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="กรุณากรอกรหัสผ่าน"
-          />
-        </div>
-
-        {/* คำนำหน้าชื่อ */}
-        <div className="mb-3">
-          <label htmlFor="prefix" className="form-label">คำนำหน้าชื่อ</label>
-          <select
-            id="prefix"
-            name="prefix"
-            className="form-select"
-            value={formData.prefix}
-            onChange={handleChange}
-            required
-          >
-            <option value="">เลือกคำนำหน้า</option>
-            <option value="นาย">นาย</option>
-            <option value="นางสาว">นางสาว</option>
-            <option value="นาง">นาง</option>
-          </select>
-        </div>
-
-        {/* ชื่อ */}
-        <div className="mb-3">
-          <label htmlFor="firstName" className="form-label">ชื่อ</label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            className="form-control"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-            placeholder="กรุณากรอกชื่อ"
-          />
-        </div>
-
-        {/* นามสกุล */}
-        <div className="mb-3">
-          <label htmlFor="lastName" className="form-label">นามสกุล</label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            className="form-control"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-            placeholder="กรุณากรอกนามสกุล"
-          />
-        </div>
-
-        {/* ที่อยู่ */}
-        <div className="mb-3">
-          <label htmlFor="address" className="form-label">ที่อยู่</label>
-          <textarea
-            id="address"
-            name="address"
-            className="form-control"
-            value={formData.address}
-            onChange={handleChange}
-            rows={3}
-            required
-            placeholder="กรุณากรอกที่อยู่"
-          />
-        </div>
-
-        {/* เพศ */}
-        <div className="mb-3">
-          <label className="form-label d-block">เพศ</label>
-          <div className="form-check form-check-inline">
+    <div style={{ paddingTop: '55px' }}>
+      <div className="container mt-5" style={{ maxWidth: '600px' }}>
+        <h1 className="text-center mb-4">สมัครสมาชิก</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">ชื่อ</label>
             <input
-              className="form-check-input"
-              type="radio"
-              id="genderMale"
-              name="gender"
-              value="ชาย"
-              checked={formData.gender === "ชาย"}
-              onChange={handleChange}
+              className="form-control"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
               required
             />
-            <label className="form-check-label" htmlFor="genderMale">ชาย</label>
           </div>
-          <div className="form-check form-check-inline">
+
+          <div className="mb-3">
+            <label className="form-label">ชื่อเต็ม</label>
             <input
-              className="form-check-input"
-              type="radio"
-              id="genderFemale"
-              name="gender"
-              value="หญิง"
-              checked={formData.gender === "หญิง"}
-              onChange={handleChange}
+              className="form-control"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">นามสกุล</label>
+            <input
+              className="form-control"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
               required
             />
-            <label className="form-check-label" htmlFor="genderFemale">หญิง</label>
           </div>
-        </div>
 
-        {/* วันเกิด */}
-        <div className="mb-3">
-          <label htmlFor="birthdate" className="form-label">วันเกิด</label>
-          <input
-            type="date"
-            id="birthdate"
-            name="birthdate"
-            className="form-control"
-            value={formData.birthdate}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div className="mb-3">
+            <label className="form-label">ชื่อผู้ใช้</label>
+            <input
+              className="form-control"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
 
-        {/* Checkbox ยอมรับเงื่อนไข */}
-        <div className="mb-3 form-check">
-          <input
-            type="checkbox"
-            id="acceptTerms"
-            name="acceptTerms"
-            className="form-check-input"
-            checked={formData.acceptTerms}
-            onChange={handleChange}
-            required
-          />
-          <label htmlFor="acceptTerms" className="form-check-label">
-            ยอมรับเงื่อนไขการสมัครสมาชิก
-          </label>
-        </div>
+          <div className="mb-3">
+            <label className="form-label">รหัสผ่าน</label>
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-        {/* ปุ่ม Register */}
-        <button type="submit" className="btn btn-success w-100">สมัครสมาชิก</button>
-      </form>
+          <div className="mb-3">
+            <label className="form-label">ที่อยู่</label>
+            <textarea
+              className="form-control"
+              rows={2}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label d-block">เพศ</label>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="male"
+                name="gender"
+                value="ชาย"
+                checked={gender === 'ชาย'}
+                onChange={(e) => setGender(e.target.value)}
+              />
+              <label className="form-check-label" htmlFor="male">
+                ชาย
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="female"
+                name="gender"
+                value="หญิง"
+                checked={gender === 'หญิง'}
+                onChange={(e) => setGender(e.target.value)}
+              />
+              <label className="form-check-label" htmlFor="female">
+                หญิง
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">วันเกิด</label>
+            <input
+              type="date"
+              className="form-control"
+              value={birthdate}
+              onChange={(e) => setBirthdate(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-success w-100">
+            สมัครสมาชิก
+          </button>
+        </form>
+      </div>
     </div>
-  );
+  )
 }
