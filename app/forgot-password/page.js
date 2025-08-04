@@ -16,7 +16,7 @@ export default function ForgotPassword() {
     }
   };
 
-  return (
+  return (<div style={{ paddingTop: '70px' }}>
     <div className="container mt-5" style={{ maxWidth: "400px" }}>
       <h1 className="text-center mb-4">ลืมรหัสผ่าน</h1>
 
@@ -45,5 +45,6 @@ export default function ForgotPassword() {
         <button type="submit" className="btn btn-primary w-100">ส่งลิงก์รีเซ็ตรหัสผ่าน</button>
       </form>
     </div>
+      </div>
   );
 }
