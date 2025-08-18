@@ -87,7 +87,14 @@ export default function Register() {
 
   return (
     <div style={{ paddingTop: '55px' }}>
-      <div className="container mt-5" style={{ maxWidth: '600px' }}>
+      <div className="container mt-5" style={{
+       maxWidth: "550px",
+      border: "2px solid #000000",
+      borderRadius: "30px",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+      padding: "100px",
+      backgroundColor: "#FFFFFF"
+    }}>
         <h1 className="text-center mb-4">สมัครสมาชิก</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
