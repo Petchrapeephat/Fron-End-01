@@ -7,29 +7,31 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'
 
 export default function UsersListPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   // Function สำหรับดึงข้อมูลผู้ใช้
   const fetchUsers = async () => {
     try {
       setLoading(true);
       const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users');
-      
+
       console.log('Fetch users response status:', res.status);
       console.log('Fetch users content-type:', res.headers.get('content-type'));
-      
+
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      
+
       // ตรวจสอบ content-type ก่อน parse JSON
       const contentType = res.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
-      
+
       let data = [];
       if (isJson) {
         data = await res.json();
@@ -38,7 +40,7 @@ export default function UsersListPage() {
         console.error('Expected JSON but got:', textResponse);
         throw new Error('Server ไม่ได้ส่ง JSON response');
       }
-      
+
       console.log('Fetched users data:', data);
       setItems(Array.isArray(data) ? data : []);
       setError(null);
@@ -52,7 +54,28 @@ export default function UsersListPage() {
 
   useEffect(() => {
     fetchUsers();
-    
+      const token = localStorage.getItem('token');
+     if (!token) {
+       router.push('/Login');
+       return;
+     }
+
+         async function getUsers() {
+      try {
+        const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users');
+        if (!res.ok) {
+          console.error('Failed to fetch data');
+          return;
+        }
+        const data = await res.json();
+        setItems(data);
+        setLoading(false); // <-- โหลดเสร็จแล้ว
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    }
+
     // Auto refresh ทุก 30 วินาที
     const interval = setInterval(fetchUsers, 30000);
     return () => clearInterval(interval);
@@ -68,17 +91,17 @@ export default function UsersListPage() {
           Accept: 'application/json',
         },
       });
-      
+
       console.log('Delete response status:', res.status);
       console.log('Delete content-type:', res.headers.get('content-type'));
-      
+
       // ตรวจสอบ content-type
       const contentType = res.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
-      
+
       let result = null;
       let errorMessage = `เกิดข้อผิดพลาด (${res.status})`;
-      
+
       if (isJson) {
         try {
           result = await res.json();
@@ -90,14 +113,14 @@ export default function UsersListPage() {
         console.log('Delete text response:', textResponse);
         result = { message: textResponse };
       }
-      
+
       console.log('Delete response:', result);
-      
+
       if (!res.ok) {
         alert('ลบไม่สำเร็จ: ' + (result?.message || errorMessage));
         return;
       }
-      
+
       alert('ลบสำเร็จ');
       // อัพเดท state โดยไม่ต้องรอ refresh
       setItems((prev) => prev.filter((item) => item.id !== id));
@@ -139,6 +162,10 @@ export default function UsersListPage() {
     );
   }
 
+   if (loading) {
+  return <div className='text-center'><h1>Loading...</h1></div>; // หรือ return null เพื่อไม่ให้ render อะไร
+}
+
   return (
     <>
       <br />
@@ -150,8 +177,8 @@ export default function UsersListPage() {
           <div className="card-header d-flex justify-content-between align-items-center">
             <h5 className="mb-0">Users List</h5>
             <div>
-              <button 
-                className="btn btn-sm btn-outline-primary me-2" 
+              <button
+                className="btn btn-sm btn-outline-primary me-2"
                 onClick={handleRefresh}
                 disabled={loading}
               >
@@ -166,14 +193,14 @@ export default function UsersListPage() {
             {error && (
               <div className="alert alert-warning alert-dismissible fade show" role="alert">
                 {error}
-                <button 
-                  type="button" 
-                  className="btn-close" 
+                <button
+                  type="button"
+                  className="btn-close"
                   onClick={() => setError(null)}
                 ></button>
               </div>
             )}
-            
+
             <div className="row">
               <div className="table-responsive">
                 <table className="table table-striped table-hover">
@@ -240,7 +267,7 @@ export default function UsersListPage() {
                 </table>
               </div>
             </div>
-            
+
             {items.length > 0 && (
               <div className="mt-3 text-muted small">
                 แสดง {items.length} รายการ | อัพเดทล่าสุด: {new Date().toLocaleString('th-TH')}
