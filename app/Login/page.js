@@ -13,7 +13,17 @@ export default function LoginPage() {
   };
 
   return (<div style={{ paddingTop: '70px' }}>
-    <div className="container mt-5" style={{ maxWidth: "400px" }}>
+    
+    <div className="container mt-5" style={{
+       maxWidth: "500px",
+      border: "2px solid #000000",
+      borderRadius: "30px",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+      padding: "65px",
+      backgroundColor: "#FFFFFF"
+    }}>
+
+      
       <h1 className="text-center mb-4">Login</h1>
 
       <form onSubmit={handleSubmit}>
