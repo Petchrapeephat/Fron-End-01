@@ -1,7 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+
 export default function Register() {
   const router = useRouter()
   const [firstname, setFirstname] = useState('')
@@ -12,6 +14,15 @@ export default function Register() {
   const [address, setAddress] = useState('')
   const [gender, setGender] = useState('')
   const [birthdate, setBirthdate] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  // ตรวจสอบการล็อกอิน - ถ้าล็อกอินแล้วให้ไปหน้าแอดมิน
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      router.push('/admin/users');
+    }
+  }, [router]);
 
   // แปลงปี พ.ศ. เป็น ค.ศ. (ถ้ามี)
   const convertThaiDateToISO = (thaiDate) => {
@@ -35,6 +46,9 @@ export default function Register() {
       return
     }
 
+    if (isLoading) return;
+    setIsLoading(true);
+
     try {
       const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users', {
         method: 'POST',
@@ -57,15 +71,16 @@ export default function Register() {
       const result = await res.json()
       console.log('API response after register:', result)
       
-
       if (!res.ok) {
         throw new Error(result.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก')
       }
 
-      Swal.fire({
+      await Swal.fire({
         icon: 'success',
         title: 'สมัครสมาชิกสำเร็จ!',
         text: result.message || 'ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว',
+        showConfirmButton: true,
+        confirmButtonText: 'ตกลง'
       })
 
       // Reset form
@@ -77,15 +92,20 @@ export default function Register() {
       setAddress('')
       setGender('')
       setBirthdate('')
+
+      // redirect ไปหน้า login
+      router.push('/Login');
+
     } catch (err) {
       Swal.fire({
         icon: 'error',
         title: 'เกิดข้อผิดพลาด',
         text: err.message,
       })
+    } finally {
+      setIsLoading(false);
     }
   }
-
 
   return (
     <>
@@ -241,7 +261,6 @@ export default function Register() {
           font-weight: 400;
           letter-spacing: 2px;
           text-shadow: 0 0 10px #00ff80;
-          content: 'NEURAL PROFILE INITIALIZATION';
         }
         
         .scifi-label {
@@ -286,6 +305,11 @@ export default function Register() {
           transform: scale(1.02);
         }
         
+        .scifi-input:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        
         .scifi-textarea {
           background: rgba(0, 0, 0, 0.8);
           border: 1px solid #00ffff;
@@ -310,6 +334,11 @@ export default function Register() {
             inset 0 0 25px rgba(255, 0, 255, 0.1);
           color: #ff00ff;
           text-shadow: 0 0 8px #ff00ff;
+        }
+        
+        .scifi-textarea:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
         
         .scifi-radio-group {
@@ -362,6 +391,11 @@ export default function Register() {
           box-shadow: 0 0 10px #ff00ff;
         }
         
+        .scifi-radio:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        
         .scifi-radio-label {
           color: #b0b8c4;
           font-family: 'Rajdhani', sans-serif;
@@ -406,6 +440,11 @@ export default function Register() {
             inset 0 0 25px rgba(255, 0, 255, 0.1);
           color: #ff00ff;
           text-shadow: 0 0 8px #ff00ff;
+        }
+        
+        .scifi-date-input:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
         
         .scifi-btn {
@@ -454,6 +493,14 @@ export default function Register() {
           box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
         }
         
+        .scifi-btn:disabled {
+          background: linear-gradient(45deg, #666, #888);
+          color: #ccc;
+          cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
+        }
+        
         .form-group {
           margin-bottom: 1.5rem;
           position: relative;
@@ -496,12 +543,31 @@ export default function Register() {
           50% { opacity: 1; }
           100% { left: 100%; opacity: 0; }
         }
+
+        .back-link {
+          color: #00ffff;
+          text-decoration: none;
+          font-family: 'Rajdhani', sans-serif;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          display: inline-block;
+          margin-bottom: 1rem;
+        }
+        
+        .back-link:hover {
+          color: #ff00ff;
+          text-shadow: 0 0 8px #ff00ff;
+        }
       `}</style>
       
       <div className="scifi-register-container">
         <div className="neural-grid"></div>
         <div className="container mt-5 d-flex justify-content-center align-items-center" style={{ minHeight: 'calc(100vh - 55px)' }}>
           <div className="scifi-register-box">
+            <Link href="/Login" className="back-link">
+              ← กลับไปหน้าเข้าสู่ระบบ
+            </Link>
+            
             <h1 className="scifi-title">
               Neural Registry
               <div className="scifi-subtitle">PROFILE INITIALIZATION PROTOCOL</div>
@@ -509,58 +575,69 @@ export default function Register() {
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="scifi-label">Firstname</label>
+                <label className="scifi-label">คำนำหน้า</label>
                 <div className="input-scanner">
-                  <input
+                  <select
                     className="scifi-input"
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
                     required
-                    placeholder="primary.neural.designation"
-                  />
+                    disabled={isLoading}
+                  >
+                    <option value="">เลือกคำนำหน้า</option>
+                    <option value="นาย">นาย</option>
+                    <option value="นาง">นาง</option>
+                    <option value="นางสาว">นางสาว</option>
+                  </select>
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Full Name</label>
+                <label className="scifi-label">ชื่อเต็ม</label>
                 <div className="input-scanner">
                   <input
+                    type="text"
                     className="scifi-input"
                     value={fullname}
                     onChange={(e) => setFullname(e.target.value)}
                     placeholder="complete.identity.string"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Lastname</label>
+                <label className="scifi-label">นามสกุล</label>
                 <div className="input-scanner">
                   <input
+                    type="text"
                     className="scifi-input"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
                     required
                     placeholder="secondary.neural.designation"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Username</label>
+                <label className="scifi-label">ชื่อผู้ใช้</label>
                 <div className="input-scanner">
                   <input
+                    type="text"
                     className="scifi-input"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
                     placeholder="cyber.username.protocol"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Password</label>
+                <label className="scifi-label">รหัสผ่าน</label>
                 <div className="input-scanner">
                   <input
                     type="password"
@@ -569,12 +646,13 @@ export default function Register() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="••••••••••••••••"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Address</label>
+                <label className="scifi-label">ที่อยู่</label>
                 <div className="input-scanner">
                   <textarea
                     className="scifi-textarea"
@@ -582,12 +660,13 @@ export default function Register() {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="terrestrial.location.coordinates"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="scifi-label d-block">Biological Classification</label>
+                <label className="scifi-label d-block">เพศ</label>
                 <div className="scifi-radio-group">
                   <div className="scifi-radio-container">
                     <input
@@ -598,9 +677,10 @@ export default function Register() {
                       value="ชาย"
                       checked={gender === 'ชาย'}
                       onChange={(e) => setGender(e.target.value)}
+                      disabled={isLoading}
                     />
                     <label className="scifi-radio-label" htmlFor="male">
-                      Male
+                      ชาย
                     </label>
                   </div>
                   <div className="scifi-radio-container">
@@ -612,16 +692,17 @@ export default function Register() {
                       value="หญิง"
                       checked={gender === 'หญิง'}
                       onChange={(e) => setGender(e.target.value)}
+                      disabled={isLoading}
                     />
                     <label className="scifi-radio-label" htmlFor="female">
-                      Famale
+                      หญิง
                     </label>
                   </div>
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Birth Timestamp</label>
+                <label className="scifi-label">วันเกิด</label>
                 <div className="input-scanner">
                   <input
                     type="date"
@@ -629,12 +710,13 @@ export default function Register() {
                     value={birthdate}
                     onChange={(e) => setBirthdate(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
-              <button type="submit" className="scifi-btn">
-                Register
+              <button type="submit" className="scifi-btn" disabled={isLoading}>
+                {isLoading ? 'กำลังสมัครสมาชิก...' : 'สมัครสมาชิก'}
               </button>
             </form>
           </div>
