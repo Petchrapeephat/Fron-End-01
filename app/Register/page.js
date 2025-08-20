@@ -508,7 +508,7 @@ export default function Register() {
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="scifi-label">Primary Neural ID</label>
+                <label className="scifi-label">Firstname</label>
                 <div className="input-scanner">
                   <input
                     className="scifi-input"
@@ -521,7 +521,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Full Identity Matrix</label>
+                <label className="scifi-label">Full Name</label>
                 <div className="input-scanner">
                   <input
                     className="scifi-input"
@@ -533,7 +533,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Secondary Neural ID</label>
+                <label className="scifi-label">Lastname</label>
                 <div className="input-scanner">
                   <input
                     className="scifi-input"
@@ -546,7 +546,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">System Username</label>
+                <label className="scifi-label">Username</label>
                 <div className="input-scanner">
                   <input
                     className="scifi-input"
@@ -559,7 +559,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Encryption Key</label>
+                <label className="scifi-label">Password</label>
                 <div className="input-scanner">
                   <input
                     type="password"
@@ -573,7 +573,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">Physical Coordinates</label>
+                <label className="scifi-label">Address</label>
                 <div className="input-scanner">
                   <textarea
                     className="scifi-textarea"
