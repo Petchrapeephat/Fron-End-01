@@ -1,258 +1,346 @@
-'use client';
-
-import Link from 'next/link';
+'use client'
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'
+import Swal from 'sweetalert2'
+import { useParams, useRouter } from 'next/navigation'
 
-export default function UsersListPage() {
+export default function Page() {
+  const router = useRouter()
+  const params = useParams();
+  const id = params.id;
+  const [firstname, setFirstname] = useState('')
+  const [fullname, setFullname] = useState('')
+  const [lastname, setLastname] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [address, setAddress] = useState('')
+  const [gender, setGender] = useState('')
+  const [birthdate, setBirthdate] = useState('')
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users');
-
-      console.log('Fetch users response status:', res.status);
-      console.log('Fetch users content-type:', res.headers.get('content-type'));
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      // ตรวจสอบ content-type ก่อน parse JSON
-      const contentType = res.headers.get('content-type');
-      const isJson = contentType && contentType.includes('application/json');
-
-      let data = [];
-      if (isJson) {
-        data = await res.json();
-      } else {
-        const textResponse = await res.text();
-        console.error('Expected JSON but got:', textResponse);
-        throw new Error('Server ไม่ได้ส่ง JSON response');
-      }
-
-      console.log('Fetched users data:', data);
-      setItems(Array.isArray(data) ? data : []);
-      setError(null);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setError('ไม่สามารถโหลดข้อมูลผู้ใช้ได้: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ตรวจสอบการล็อกอิน
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/Login');
       return;
     }
-
-    fetchUsers();
-
-    // Auto refresh ทุก 30 วินาที
-    const interval = setInterval(fetchUsers, 30000);
-    return () => clearInterval(interval);
   }, [router]);
 
-  const handleDelete = async (userId) => {
-    if (!confirm('ต้องการลบผู้ใช้นี้จริงหรือไม่?')) return;
-
-    try {
-      const res = await fetch(`https://backend-nextjs-virid.vercel.app/api/users/${userId}`, {
-        method: 'DELETE',
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      console.log('Delete response status:', res.status);
-      console.log('Delete content-type:', res.headers.get('content-type'));
-
-      // ตรวจสอบ content-type
-      const contentType = res.headers.get('content-type');
-      const isJson = contentType && contentType.includes('application/json');
-
-      let result = null;
-      let errorMessage = `เกิดข้อผิดพลาด (${res.status})`;
-
-      if (isJson) {
-        try {
-          result = await res.json();
-        } catch (jsonError) {
-          console.error('Error parsing delete JSON:', jsonError);
-        }
-      } else {
-        const textResponse = await res.text();
-        console.log('Delete text response:', textResponse);
-        result = { message: textResponse };
-      }
-
-      console.log('Delete response:', result);
-
-      if (!res.ok) {
-        alert('ลบไม่สำเร็จ: ' + (result?.message || errorMessage));
-        return;
-      }
-
-      alert('ลบสำเร็จ');
-      // อัพเดท state โดยไม่ต้องรอ refresh
-      setItems((prev) => prev.filter((item) => item.id !== userId));
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      alert('เกิดข้อผิดพลาด: ' + error.message);
-    }
-  };
-
-  // Handle manual refresh
-  const handleRefresh = () => {
-    fetchUsers();
-  };
-
-  if (loading && items.length === 0) {
-    return (
-      <div className="container mt-5">
-        <div className="text-center">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="mt-2">กำลังโหลดข้อมูล...</p>
-        </div>
-      </div>
-    );
+  // แปลงวันที่จาก ISO เป็นรูปแบบที่ input date รองรับ
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return ''
+    return date.toISOString().split('T')[0]
   }
 
-  if (error && items.length === 0) {
+  // แปลงปี พ.ศ. เป็น ค.ศ. (ถ้ามี)
+  const convertThaiDateToISO = (thaiDate) => {
+    if (!thaiDate) return ''
+    const [year, month, day] = thaiDate.split('-')
+    let westernYear = parseInt(year, 10)
+    if (westernYear > 2400) {
+      westernYear -= 543
+    }
+    return `${westernYear.toString().padStart(4, '0')}-${month}-${day}`
+  }
+
+  useEffect(() => {
+    async function getUsers() {
+      try {
+        const res = await fetch(`https://backend-nextjs-virid.vercel.app/api/users/${id}`);
+        if (!res.ok) {
+          console.error('Failed to fetch data');
+          Swal.fire({
+            icon: 'error',
+            title: 'ไม่สามารถโหลดข้อมูลได้',
+            text: 'กรุณาลองใหม่อีกครั้ง'
+          });
+          return;
+        }
+        const data = await res.json();
+        
+        // เนื่องจาก GET by ID จะส่งกลับข้อมูลผู้ใช้คนเดียว ไม่ใช่ array
+        if (data) {
+          setFirstname(data.firstname || '');
+          setFullname(data.fullname || '');
+          setLastname(data.lastname || '');
+          setUsername(data.username || '');
+          setPassword(data.password || '');
+          setAddress(data.address || '');
+          setGender(data.sex || '');
+          setBirthdate(formatDateForInput(data.birthday) || '');
+          setItems([data]); // ใส่ใน array เพื่อให้ compatible กับการแสดงผล
+        }
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
+        });
+      }
+    }
+ 
+    if (id) {
+      getUsers();
+    }
+  }, [id]);
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    
+    // ตรวจสอบข้อมูลที่จำเป็น
+    if (!firstname || !lastname || !username || !password || !gender || !birthdate) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      })
+      return
+    }
+    
+    // ป้องกันการส่งข้อมูลซ้ำ
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users', {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          id: parseInt(id), 
+          firstname, 
+          fullname, 
+          lastname, 
+          username, 
+          password,
+          address,
+          sex: gender,
+          birthday: convertThaiDateToISO(birthdate)
+        }),
+      });
+
+      const result = await res.json();
+      console.log(result);
+
+      if (res.ok) {
+        // แสดง success message
+        await Swal.fire({
+          icon: 'success',
+          title: '<h3>ปรับปรุงข้อมูลเรียบร้อยแล้ว</h3>',
+          showConfirmButton: false,
+          timer: 2000
+        });
+        
+        // รอให้ SweetAlert ปิดก่อน แล้วค่อย navigate
+        setTimeout(() => {
+          router.push('/admin/users');
+        }, 100);
+        
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: result.message || 'เกิดข้อผิดพลาดในการปรับปรุงข้อมูล!',
+          icon: 'error',
+          confirmButtonText: 'ตกลง'
+        });
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาดเครือข่าย',
+        text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Loading state
+  if (items.length === 0) {
     return (
-      <div className="container mt-5">
-        <div className="alert alert-danger" role="alert">
-          <h4>เกิดข้อผิดพลาด</h4>
-          <p>{error}</p>
-          <button className="btn btn-primary" onClick={handleRefresh}>
-            ลองใหม่
-          </button>
+      <div style={{ paddingTop: '55px' }}>
+        <div className="container mt-5" style={{
+          maxWidth: "550px",
+          border: "2px solid #000000",
+          borderRadius: "30px",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+          padding: "100px",
+          backgroundColor: "#FFFFFF"
+        }}>
+          <div className="text-center">กำลังโหลดข้อมูล...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      <br />
-      <br />
-      <br />
-      <br />
-      <div className="container">
-        <div className="card">
-          <div className="card-header d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">Users List</h5>
-            <div>
-              <button
-                className="btn btn-sm btn-outline-primary me-2"
-                onClick={handleRefresh}
-                disabled={loading}
+    <div style={{ paddingTop: '55px' }}>
+      <div className="container mt-5" style={{
+        maxWidth: "550px",
+        border: "2px solid #000000",
+        borderRadius: "30px",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+        padding: "100px",
+        backgroundColor: "#FFFFFF"
+      }}>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="text-center mb-0">แก้ไขข้อมูลสมัครสมาชิก {id}</h1>
+          <Link href="/admin/users" className="btn btn-secondary">
+            ← กลับ
+          </Link>
+        </div>
+        
+        {items.map((item) => (
+          <form key={item.id} onSubmit={handleUpdateSubmit}>
+            <div className="mb-3">
+              <label className="form-label">คำนำหน้า</label>
+              <select 
+                name="firstname" 
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)} 
+                className="form-control" 
+                required
+                disabled={isLoading}
               >
-                {loading ? 'กำลังโหลด...' : 'รีเฟรช'}
+                <option value="">เลือกคำนำหน้า</option>
+                <option value="นาย">นาย</option>
+                <option value="นาง">นาง</option>
+                <option value="นางสาว">นางสาว</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">ชื่อเต็ม</label>
+              <input
+                type="text"
+                className="form-control"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">นามสกุล</label>
+              <input
+                type="text"
+                className="form-control"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">ชื่อผู้ใช้</label>
+              <input
+                type="text"
+                className="form-control"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">รหัสผ่าน</label>
+              <input
+                type="password"
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">ที่อยู่</label>
+              <textarea
+                className="form-control"
+                rows={2}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label d-block">เพศ</label>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="male"
+                  name="gender"
+                  value="ชาย"
+                  checked={gender === 'ชาย'}
+                  onChange={(e) => setGender(e.target.value)}
+                  disabled={isLoading}
+                />
+                <label className="form-check-label" htmlFor="male">
+                  ชาย
+                </label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="female"
+                  name="gender"
+                  value="หญิง"
+                  checked={gender === 'หญิง'}
+                  onChange={(e) => setGender(e.target.value)}
+                  disabled={isLoading}
+                />
+                <label className="form-check-label" htmlFor="female">
+                  หญิง
+                </label>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">วันเกิด</label>
+              <input
+                type="date"
+                className="form-control"
+                value={birthdate}
+                onChange={(e) => setBirthdate(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="d-grid gap-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`btn w-100 ${
+                  isLoading 
+                    ? 'btn-secondary' 
+                    : 'btn-success'
+                }`}
+              >
+                {isLoading ? 'กำลังปรับปรุงข้อมูล...' : 'ปรับปรุงข้อมูล'}
               </button>
-              <Link href="/Register" className="btn btn-sm btn-success">
-                เพิ่มผู้ใช้ใหม่
+              
+              <Link href="/admin/users" className="btn btn-outline-secondary w-100">
+                ยกเลิก
               </Link>
             </div>
-          </div>
-          <div className="card-body">
-            {error && (
-              <div className="alert alert-warning alert-dismissible fade show" role="alert">
-                {error}
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setError(null)}
-                ></button>
-              </div>
-            )}
-
-            <div className="row">
-              <div className="table-responsive">
-                <table className="table table-striped table-hover">
-                  <thead className="table-dark">
-                    <tr>
-                      <th className="text-center">#</th>
-                      <th>Firstname</th>
-                      <th>Fullname</th>
-                      <th>Lastname</th>
-                      <th>Username</th>
-                      <th>Password</th>
-                      <th>Address</th>
-                      <th>Sex</th>
-                      <th>Birthday</th>
-                      <th className="text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.length === 0 ? (
-                      <tr>
-                        <td colSpan="10" className="text-center text-muted py-4">
-                          ไม่พบข้อมูลผู้ใช้
-                        </td>
-                      </tr>
-                    ) : (
-                      items.map((item) => (
-                        <tr key={item.id}>
-                          <td className="text-center">{item.id}</td>
-                          <td>{item.firstname || '-'}</td>
-                          <td>{item.fullname || '-'}</td>
-                          <td>{item.lastname || '-'}</td>
-                          <td>{item.username || '-'}</td>
-                          <td>
-                            {item.password ? '••••••••' : '-'}
-                          </td>
-                          <td>{item.address || '-'}</td>
-                          <td>{item.sex || '-'}</td>
-                          <td>
-                            {item.birthday ? new Date(item.birthday).toLocaleDateString('th-TH') : '-'}
-                          </td>
-                          <td className="text-center">
-                            <div className="btn-group" role="group">
-                              <Link
-                                href={`/admin/users/edit/${item.id}`}
-                                className="btn btn-sm btn-warning"
-                                title="แก้ไข"
-                              >
-                                <i className="fa fa-edit"></i> Edit
-                              </Link>
-                              <button
-                                className="btn btn-sm btn-danger"
-                                type="button"
-                                onClick={() => handleDelete(item.id)}
-                                title="ลบ"
-                              >
-                                <i className="fa fa-trash"></i> Del
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {items.length > 0 && (
-              <div className="mt-3 text-muted small">
-                แสดง {items.length} รายการ | อัพเดทล่าสุด: {new Date().toLocaleString('th-TH')}
-              </div>
-            )}
-          </div>
-        </div>
+          </form>
+        ))}
       </div>
-      <br />
-      <br />
-    </>
-  );
+    </div>
+  )
 }
