@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react'
 import Swal from 'sweetalert2'
-
+import { useRouter } from 'next/navigation'
 export default function Register() {
+  const router = useRouter()
   const [firstname, setFirstname] = useState('')
   const [fullname, setFullname] = useState('')
   const [lastname, setLastname] = useState('')
