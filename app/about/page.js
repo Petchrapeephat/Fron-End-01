@@ -4,4 +4,4 @@ export default function about() {
     <h1 className="ftext-4xl text-center text-bule-950">About page</h1>
     </>
   );
-}//gg
+}
