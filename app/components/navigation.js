@@ -194,12 +194,12 @@ export default function Navbar() {
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link className="nav-link active scifi-nav-link" aria-current="page" href="/">
-                  หน้าแรก
+                  Home
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link scifi-nav-link" href="about">
-                  เกี่ยวกับเรา
+                  about
                 </Link>
               </li>
               <li className="nav-item dropdown">
@@ -210,17 +210,17 @@ export default function Navbar() {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  บริการของเรา
+                  service
                 </Link>
                 <ul className="dropdown-menu scifi-dropdown-menu">
                   <li>
                     <Link className="dropdown-item scifi-dropdown-item" href="service">
-                      ติดต่อเรา
+                      contact us
                     </Link>
                   </li>
                   <li>
                     <Link className="dropdown-item scifi-dropdown-item" href="service">
-                      ติดต่อ ด้านอื่นๆ
+                      contact other areas
                     </Link>
                   </li>
                   <li>
@@ -228,14 +228,14 @@ export default function Navbar() {
                   </li>
                   <li>
                     <Link className="dropdown-item scifi-dropdown-item" href="service">
-                      สอบถามเกี่ยวกับปัญหา
+                      Ask about problems
                     </Link>
                   </li>
                 </ul>
               </li>
               <li className="nav-item">
                 <Link href="contact" className="nav-link scifi-nav-link" aria-disabled="true">
-                  ติดต่อเรา
+                  contact
                 </Link>
               </li>
             </ul>
