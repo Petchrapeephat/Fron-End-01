@@ -325,7 +325,7 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label htmlFor="username" className="scifi-label">Neural ID</label>
+                <label htmlFor="username" className="scifi-label">Login</label>
                 <input
                   type="text"
                   id="username"
@@ -338,7 +338,7 @@ export default function LoginPage() {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="password" className="scifi-label">Access Code</label>
+                <label htmlFor="password" className="scifi-label">Password</label>
                 <input
                   type="password"
                   id="password"
