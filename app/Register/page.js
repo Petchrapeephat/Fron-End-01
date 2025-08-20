@@ -599,7 +599,7 @@ export default function Register() {
                       onChange={(e) => setGender(e.target.value)}
                     />
                     <label className="scifi-radio-label" htmlFor="male">
-                      Alpha Unit
+                      Male
                     </label>
                   </div>
                   <div className="scifi-radio-container">
@@ -613,7 +613,7 @@ export default function Register() {
                       onChange={(e) => setGender(e.target.value)}
                     />
                     <label className="scifi-radio-label" htmlFor="female">
-                      Beta Unit
+                      Famale
                     </label>
                   </div>
                 </div>
@@ -633,7 +633,7 @@ export default function Register() {
               </div>
 
               <button type="submit" className="scifi-btn">
-                Initialize Profile
+                Register
               </button>
             </form>
           </div>
