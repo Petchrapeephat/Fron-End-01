@@ -40,7 +40,7 @@ export default function Page() {
   useEffect(() => {
     async function getUsers() {
       try {
-        const res = await fetch(`http://itdev.cmtc.ac.th:3000/api/users/${id}`);
+        const res = await fetch(`https://backend-nextjs-virid.vercel.app/api/users/${id}`);
         if (!res.ok) {
           console.error('Failed to fetch data');
           Swal.fire({
@@ -51,19 +51,18 @@ export default function Page() {
           return;
         }
         const data = await res.json();
-        setItems(data);
-
-        // กำหนดค่า state เริ่มต้นจาก API
-        if (data.length > 0) {
-          const user = data[0];
-          setFirstname(user.firstname || '');
-          setFullname(user.fullname || '');
-          setLastname(user.lastname || '');
-          setUsername(user.username || '');
-          setPassword(user.password || '');
-          setAddress(user.address || '');
-          setGender(user.sex || '');
-          setBirthdate(formatDateForInput(user.birthday) || '');
+        
+        // เนื่องจาก GET by ID จะส่งกลับข้อมูลผู้ใช้คนเดียว ไม่ใช่ array
+        if (data) {
+          setFirstname(data.firstname || '');
+          setFullname(data.fullname || '');
+          setLastname(data.lastname || '');
+          setUsername(data.username || '');
+          setPassword(data.password || '');
+          setAddress(data.address || '');
+          setGender(data.sex || '');
+          setBirthdate(formatDateForInput(data.birthday) || '');
+          setItems([data]); // ใส่ใน array เพื่อให้ compatible กับการแสดงผล
         }
 
       } catch (error) {
@@ -97,14 +96,14 @@ export default function Page() {
     setIsLoading(true);
     
     try {
-      const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users', {
+      const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users', {
         method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          id, 
+          id: parseInt(id), 
           firstname, 
           fullname, 
           lastname, 
