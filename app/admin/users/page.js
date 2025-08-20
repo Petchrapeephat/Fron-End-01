@@ -1,8 +1,3 @@
-
-// ========================================
-// 1. หน้า User List (users/page.js) - เวอร์ชั่นสมบูรณ์
-// ========================================
-
 'use client';
 
 import Link from 'next/link';
@@ -15,11 +10,10 @@ export default function UsersListPage() {
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  // Function สำหรับดึงข้อมูลผู้ใช้
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users');
+      const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users');
 
       console.log('Fetch users response status:', res.status);
       console.log('Fetch users content-type:', res.headers.get('content-type'));
@@ -53,39 +47,24 @@ export default function UsersListPage() {
   };
 
   useEffect(() => {
-    fetchUsers();
-      const token = localStorage.getItem('token');
-     if (!token) {
-       router.push('/Login');
-       return;
-     }
-
-         async function getUsers() {
-      try {
-        const res = await fetch('http://itdev.cmtc.ac.th:3000/api/users');
-        if (!res.ok) {
-          console.error('Failed to fetch data');
-          return;
-        }
-        const data = await res.json();
-        setItems(data);
-        setLoading(false); // <-- โหลดเสร็จแล้ว
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/Login');
+      return;
     }
+
+    fetchUsers();
 
     // Auto refresh ทุก 30 วินาที
     const interval = setInterval(fetchUsers, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [router]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (userId) => {
     if (!confirm('ต้องการลบผู้ใช้นี้จริงหรือไม่?')) return;
 
     try {
-      const res = await fetch(`http://itdev.cmtc.ac.th:3000/api/users/${id}`, {
+      const res = await fetch(`https://backend-nextjs-virid.vercel.app/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',
@@ -123,7 +102,7 @@ export default function UsersListPage() {
 
       alert('ลบสำเร็จ');
       // อัพเดท state โดยไม่ต้องรอ refresh
-      setItems((prev) => prev.filter((item) => item.id !== id));
+      setItems((prev) => prev.filter((item) => item.id !== userId));
     } catch (error) {
       console.error('Error deleting user:', error);
       alert('เกิดข้อผิดพลาด: ' + error.message);
@@ -161,10 +140,6 @@ export default function UsersListPage() {
       </div>
     );
   }
-
-   if (loading) {
-  return <div className='text-center'><h1>Loading...</h1></div>; // หรือ return null เพื่อไม่ให้ render อะไร
-}
 
   return (
     <>
