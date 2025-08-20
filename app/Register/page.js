@@ -24,24 +24,25 @@ export default function Register() {
     }
   }, [router]);
 
-  // แปลงปี พ.ศ. เป็น ค.ศ. (ถ้ามี)
-  const convertThaiDateToISO = (thaiDate) => {
-    if (!thaiDate) return ''
-    const [year, month, day] = thaiDate.split('-')
-    let westernYear = parseInt(year, 10)
-    if (westernYear > 2400) {
-      westernYear -= 543
-    }
-    return `${westernYear.toString().padStart(4, '0')}-${month}-${day}`
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // ตรวจสอบข้อมูลที่จำเป็น
     if (!firstname || !lastname || !username || !password || !gender || !birthdate) {
       Swal.fire({
         icon: 'warning',
         title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        text: 'กรุณากรอกข้อมูลในช่องที่มีเครื่องหมาย * ให้ครบถ้วน'
+      })
+      return
+    }
+
+    // ตรวจสอบความแข็งแรงของรหัสผ่าน
+    if (password.length < 6) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'รหัสผ่านสั้นเกินไป',
+        text: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'
       })
       return
     }
@@ -54,17 +55,17 @@ export default function Register() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           firstname,
-          fullname,
+          fullname: fullname || null, // ส่ง null ถ้าไม่มีข้อมูล
           lastname,
           username,
           password,
-          address,
+          address: address || null, // ส่ง null ถ้าไม่มีข้อมูล
           sex: gender,
-          birthday: convertThaiDateToISO(birthdate), // ส่งแบบแปลงแล้ว
+          birthday: birthdate, // ส่งตามรูปแบบที่ input date ให้มา (YYYY-MM-DD)
         }),
       })
 
@@ -72,15 +73,24 @@ export default function Register() {
       console.log('API response after register:', result)
       
       if (!res.ok) {
-        throw new Error(result.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก')
+        // จัดการ error ตาม status code
+        if (res.status === 409 || res.status === 400) {
+          throw new Error(result.message || 'ชื่อผู้ใช้นี้มีอยู่ในระบบแล้ว')
+        } else if (res.status >= 500) {
+          throw new Error('เซิร์ฟเวอร์ขัดข้อง กรุณาลองใหม่ภายหลัง')
+        } else {
+          throw new Error(result.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก')
+        }
       }
 
       await Swal.fire({
         icon: 'success',
         title: 'สมัครสมาชิกสำเร็จ!',
-        text: result.message || 'ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว',
+        text: 'ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ',
         showConfirmButton: true,
-        confirmButtonText: 'ตกลง'
+        confirmButtonText: 'ไปหน้าเข้าสู่ระบบ',
+        allowOutsideClick: false,
+        allowEscapeKey: false
       })
 
       // Reset form
@@ -94,13 +104,15 @@ export default function Register() {
       setBirthdate('')
 
       // redirect ไปหน้า login
-      router.push('/Login');
+      router.push('/login');
 
     } catch (err) {
+      console.error('Registration error:', err)
       Swal.fire({
         icon: 'error',
         title: 'เกิดข้อผิดพลาด',
         text: err.message,
+        confirmButtonText: 'ลองใหม่'
       })
     } finally {
       setIsLoading(false);
@@ -275,7 +287,11 @@ export default function Register() {
           display: block;
         }
         
-        .scifi-input {
+        .required {
+          color: #ff00ff;
+        }
+        
+        .scifi-input, .scifi-select {
           background: rgba(0, 0, 0, 0.8);
           border: 1px solid #00ffff;
           border-radius: 10px;
@@ -293,7 +309,7 @@ export default function Register() {
           font-style: italic;
         }
         
-        .scifi-input:focus {
+        .scifi-input:focus, .scifi-select:focus {
           outline: none;
           background: rgba(0, 0, 0, 0.9);
           border-color: #ff00ff;
@@ -305,7 +321,7 @@ export default function Register() {
           transform: scale(1.02);
         }
         
-        .scifi-input:disabled {
+        .scifi-input:disabled, .scifi-select:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
@@ -558,13 +574,27 @@ export default function Register() {
           color: #ff00ff;
           text-shadow: 0 0 8px #ff00ff;
         }
+
+        .loading-spinner {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255,255,255,.3);
+          border-radius: 50%;
+          border-top-color: #fff;
+          animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
       `}</style>
       
       <div className="scifi-register-container">
         <div className="neural-grid"></div>
         <div className="container mt-5 d-flex justify-content-center align-items-center" style={{ minHeight: 'calc(100vh - 55px)' }}>
           <div className="scifi-register-box">
-            <Link href="/Login" className="back-link">
+            <Link href="/login" className="back-link">
               ← กลับไปหน้าเข้าสู่ระบบ
             </Link>
             
@@ -575,10 +605,10 @@ export default function Register() {
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="scifi-label">คำนำหน้า</label>
+                <label className="scifi-label">คำนำหน้า <span className="required">*</span></label>
                 <div className="input-scanner">
                   <select
-                    className="scifi-input"
+                    className="scifi-select"
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
                     required
@@ -607,7 +637,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">นามสกุล</label>
+                <label className="scifi-label">นามสกุล <span className="required">*</span></label>
                 <div className="input-scanner">
                   <input
                     type="text"
@@ -622,7 +652,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">ชื่อผู้ใช้</label>
+                <label className="scifi-label">ชื่อผู้ใช้ <span className="required">*</span></label>
                 <div className="input-scanner">
                   <input
                     type="text"
@@ -637,7 +667,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">รหัสผ่าน</label>
+                <label className="scifi-label">รหัสผ่าน <span className="required">*</span></label>
                 <div className="input-scanner">
                   <input
                     type="password"
@@ -647,8 +677,12 @@ export default function Register() {
                     required
                     placeholder="••••••••••••••••"
                     disabled={isLoading}
+                    minLength="6"
                   />
                 </div>
+                <small style={{ color: '#b0b8c4', fontSize: '0.9rem' }}>
+                  รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร
+                </small>
               </div>
 
               <div className="form-group">
@@ -666,7 +700,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label d-block">เพศ</label>
+                <label className="scifi-label d-block">เพศ <span className="required">*</span></label>
                 <div className="scifi-radio-group">
                   <div className="scifi-radio-container">
                     <input
@@ -678,6 +712,7 @@ export default function Register() {
                       checked={gender === 'ชาย'}
                       onChange={(e) => setGender(e.target.value)}
                       disabled={isLoading}
+                      required
                     />
                     <label className="scifi-radio-label" htmlFor="male">
                       ชาย
@@ -693,6 +728,7 @@ export default function Register() {
                       checked={gender === 'หญิง'}
                       onChange={(e) => setGender(e.target.value)}
                       disabled={isLoading}
+                      required
                     />
                     <label className="scifi-radio-label" htmlFor="female">
                       หญิง
@@ -702,7 +738,7 @@ export default function Register() {
               </div>
 
               <div className="form-group">
-                <label className="scifi-label">วันเกิด</label>
+                <label className="scifi-label">วันเกิด <span className="required">*</span></label>
                 <div className="input-scanner">
                   <input
                     type="date"
@@ -711,12 +747,20 @@ export default function Register() {
                     onChange={(e) => setBirthdate(e.target.value)}
                     required
                     disabled={isLoading}
+                    max={new Date().toISOString().split('T')[0]}
                   />
                 </div>
               </div>
 
               <button type="submit" className="scifi-btn" disabled={isLoading}>
-                {isLoading ? 'กำลังสมัครสมาชิก...' : 'สมัครสมาชิก'}
+                {isLoading ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    &nbsp;กำลังสมัครสมาชิก...
+                  </>
+                ) : (
+                  'สมัครสมาชิก'
+                )}
               </button>
             </form>
           </div>
