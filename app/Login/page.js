@@ -1,16 +1,54 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-
+import { useRouter } from 'next/navigation';
 export default function LoginPage() {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Neural ID: ${username}\nAccess Code: ${password}\nStay Connected: ${remember}`);
-  };
+const [password, setPassword] = useState("");
+const [remember, setRemember] = useState(false);
+const [isLoading, setIsLoading] = useState(false);
+const router = useRouter();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (isLoading) return;
+  setIsLoading(true);
+  
+  try {
+    const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users');
+    
+    if (!res.ok) {
+      throw new Error('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+    }
+    
+    const users = await res.json();
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if (user) {
+      const token = `token_${user.id}_${Date.now()}`;
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({
+        id: user.id,
+        username: user.username,
+        firstname: user.firstname,
+        lastname: user.lastname
+      }));
+      
+      alert('เข้าสู่ระบบสำเร็จ!');
+      router.push('/admin/users');
+      
+    } else {
+      alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+    }
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('เกิดข้อผิดพลาดในการเข้าสู่ระบบ: ' + error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <>
@@ -363,8 +401,8 @@ export default function LoginPage() {
                 </label>
               </div>
 
-              <button type="submit" className="scifi-btn">
-                Initialize Connection
+              <button type="submit" className="scifi-btn" disabled={isLoading}>
+              {isLoading ? 'Connecting...' : 'Initialize Connection'}
               </button>
             </form>
 
