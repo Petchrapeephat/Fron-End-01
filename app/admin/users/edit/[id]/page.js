@@ -18,6 +18,15 @@ export default function Page() {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // ตรวจสอบการล็อกอิน
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/Login');
+      return;
+    }
+  }, [router]);
+
   // แปลงวันที่จาก ISO เป็นรูปแบบที่ input date รองรับ
   const formatDateForInput = (dateString) => {
     if (!dateString) return ''
@@ -75,7 +84,9 @@ export default function Page() {
       }
     }
  
-    getUsers();
+    if (id) {
+      getUsers();
+    }
   }, [id]);
 
   const handleUpdateSubmit = async (e) => {
@@ -180,7 +191,13 @@ export default function Page() {
         padding: "100px",
         backgroundColor: "#FFFFFF"
       }}>
-        <h1 className="text-center mb-4">แก้ไขข้อมูลสมัครสมาชิก {id}</h1>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="text-center mb-0">แก้ไขข้อมูลสมัครสมาชิก {id}</h1>
+          <Link href="/admin/users" className="btn btn-secondary">
+            ← กลับ
+          </Link>
+        </div>
+        
         {items.map((item) => (
           <form key={item.id} onSubmit={handleUpdateSubmit}>
             <div className="mb-3">
@@ -191,6 +208,7 @@ export default function Page() {
                 onChange={(e) => setFirstname(e.target.value)} 
                 className="form-control" 
                 required
+                disabled={isLoading}
               >
                 <option value="">เลือกคำนำหน้า</option>
                 <option value="นาย">นาย</option>
@@ -206,6 +224,7 @@ export default function Page() {
                 className="form-control"
                 value={fullname}
                 onChange={(e) => setFullname(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
@@ -217,6 +236,7 @@ export default function Page() {
                 value={lastname}
                 onChange={(e) => setLastname(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -228,6 +248,7 @@ export default function Page() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -239,6 +260,7 @@ export default function Page() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -249,6 +271,7 @@ export default function Page() {
                 rows={2}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
@@ -263,6 +286,7 @@ export default function Page() {
                   value="ชาย"
                   checked={gender === 'ชาย'}
                   onChange={(e) => setGender(e.target.value)}
+                  disabled={isLoading}
                 />
                 <label className="form-check-label" htmlFor="male">
                   ชาย
@@ -277,6 +301,7 @@ export default function Page() {
                   value="หญิง"
                   checked={gender === 'หญิง'}
                   onChange={(e) => setGender(e.target.value)}
+                  disabled={isLoading}
                 />
                 <label className="form-check-label" htmlFor="female">
                   หญิง
@@ -292,20 +317,27 @@ export default function Page() {
                 value={birthdate}
                 onChange={(e) => setBirthdate(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`btn w-100 ${
-                isLoading 
-                  ? 'btn-secondary' 
-                  : 'btn-success'
-              }`}
-            >
-              {isLoading ? 'กำลังปรับปรุงข้อมูล...' : 'ปรับปรุงข้อมูล'}
-            </button>
+            <div className="d-grid gap-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`btn w-100 ${
+                  isLoading 
+                    ? 'btn-secondary' 
+                    : 'btn-success'
+                }`}
+              >
+                {isLoading ? 'กำลังปรับปรุงข้อมูล...' : 'ปรับปรุงข้อมูล'}
+              </button>
+              
+              <Link href="/admin/users" className="btn btn-outline-secondary w-100">
+                ยกเลิก
+              </Link>
+            </div>
           </form>
         ))}
       </div>
