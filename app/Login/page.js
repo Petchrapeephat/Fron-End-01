@@ -1,54 +1,86 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+
 export default function LoginPage() {
   const [username, setUsername] = useState("");
-const [password, setPassword] = useState("");
-const [remember, setRemember] = useState(false);
-const [isLoading, setIsLoading] = useState(false);
-const router = useRouter();
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (isLoading) return;
-  setIsLoading(true);
-  
-  try {
-    const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users');
-    
-    if (!res.ok) {
-      throw new Error('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
-    }
-    
-    const users = await res.json();
-    const user = users.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-      const token = `token_${user.id}_${Date.now()}`;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify({
-        id: user.id,
-        username: user.username,
-        firstname: user.firstname,
-        lastname: user.lastname
-      }));
-      
-      alert('เข้าสู่ระบบสำเร็จ!');
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  // ตรวจสอบว่าล็อกอินอยู่แล้วหรือไม่
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
       router.push('/admin/users');
-      
-    } else {
-      alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+    }
+  }, [router]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (isLoading) return;
+    
+    // ตรวจสอบข้อมูลว่าง
+    if (!username.trim() || !password.trim()) {
+      alert('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
+      return;
     }
     
-  } catch (error) {
-    console.error('Login error:', error);
-    alert('เกิดข้อผิดพลาดในการเข้าสู่ระบบ: ' + error.message);
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
+    
+    try {
+      const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users');
+      
+      if (!res.ok) {
+        throw new Error('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+      }
+      
+      const users = await res.json();
+      console.log('Users from API:', users); // Debug log
+      
+      // หาผู้ใช้ที่ตรงกัน
+      const user = users.find(u => 
+        u.username === username.trim() && u.password === password.trim()
+      );
+      
+      console.log('Found user:', user); // Debug log
+      
+      if (user) {
+        // สร้าง token
+        const token = `token_${user.id}_${Date.now()}`;
+        
+        // บันทึกข้อมูลใน localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify({
+          id: user.id,
+          username: user.username,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          fullname: user.fullname
+        }));
+        
+        console.log('Login successful, redirecting...'); // Debug log
+        
+        alert('เข้าสู่ระบบสำเร็จ!');
+        
+        // redirect ไปหน้าแอดมิน
+        router.push('/admin/users');
+        
+      } else {
+        alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+        console.log('Login failed - user not found'); // Debug log
+      }
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('เกิดข้อผิดพลาดในการเข้าสู่ระบบ: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -312,6 +344,14 @@ const router = useRouter();
           box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
         }
         
+        .scifi-btn:disabled {
+          background: linear-gradient(45deg, #666, #888);
+          color: #ccc;
+          cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
+        }
+        
         .scifi-links {
           text-align: center;
           margin-top: 2rem;
@@ -363,7 +403,7 @@ const router = useRouter();
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label htmlFor="username" className="scifi-label">Login</label>
+                <label htmlFor="username" className="scifi-label">Username</label>
                 <input
                   type="text"
                   id="username"
@@ -372,6 +412,7 @@ const router = useRouter();
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   placeholder="neural.interface.id"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -385,6 +426,7 @@ const router = useRouter();
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••••••"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -395,6 +437,7 @@ const router = useRouter();
                   className="scifi-checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
+                  disabled={isLoading}
                 />
                 <label htmlFor="remember" className="scifi-checkbox-label">
                   Maintain Neural Connection
@@ -402,17 +445,17 @@ const router = useRouter();
               </div>
 
               <button type="submit" className="scifi-btn" disabled={isLoading}>
-              {isLoading ? 'Connecting...' : 'Initialize Connection'}
+                {isLoading ? 'กำลังเชื่อมต่อ...' : 'เข้าสู่ระบบ'}
               </button>
             </form>
 
             <div className="scifi-links">
               <Link href="/Register" className="scifi-link">
-                Register Neural Profile
+                สมัครสมาชิก
               </Link>
               <span className="scifi-separator">|</span>
               <Link href="/forgot-password" className="scifi-link">
-                Recovery Protocol
+                ลืมรหัสผ่าน
               </Link>
             </div>
           </div>
