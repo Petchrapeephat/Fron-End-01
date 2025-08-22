@@ -1,7 +1,23 @@
 "use client";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
+  const router = useRouter();
+const [tokenState, setToken] = useState("");
+
+useEffect(() => {
+  // อ่าน token จาก localStorage (ตอน mount)
+  const token = localStorage.getItem("token");
+  setToken(token);
+}, []);
+
+const handleSignOut = () => {
+  localStorage.removeItem("token");
+  setToken(null);
+  router.push("/signin");
+};
   return (
     <>
       <style jsx>{`
@@ -252,9 +268,21 @@ export default function Navbar() {
               </button>
             </form>
 
-            <Link href="/Login">
-              <button className="btn ms-3 scifi-btn-login">MATRIX LOGIN</button>
-            </Link>
+    
+            
+              {tokenState ? (
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="btn btn-outline-danger"
+              >
+                <i className="bi bi-box-arrow-right"></i> SignOut
+              </button>
+            ) : (
+              <Link href="/signin">
+                <button className="btn ms-3 scifi-btn-login">MATRIX Signin</button>
+              </Link>
+            )}
           </div>
         </div>
       </nav>
