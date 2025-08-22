@@ -22,9 +22,9 @@ const handleSignOut = () => {
     <>
       <style jsx>{`
         .scifi-navbar {
-          background: linear-gradient(135deg, #8d8d8dff 0%, #424242ff 50%, #16213e 100%);
-          border-bottom: 2px solid #00ffff;
-          box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+          background: linear-gradient(135deg, #818080ff 0%, #292828ff 50%, #000000ff 100%);
+          border-bottom: 2px solid #ffffffc4;
+          box-shadow: 0 0 50px rgba(255, 255, 255, 1);
           backdrop-filter: blur(10px);
         }
         
@@ -75,7 +75,7 @@ const handleSignOut = () => {
         }
         
         .scifi-dropdown-menu {
-          background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+          background: linear-gradient(135deg, #b8b7b7ff 0%, #5a5a5aff 100%);
           border: 1px solid #00ffff;
           box-shadow: 0 8px 32px rgba(0, 255, 255, 0.3);
           backdrop-filter: blur(10px);
@@ -193,7 +193,7 @@ const handleSignOut = () => {
               height={24}
               className="d-inline-block align-text-top scifi-logo"
             />
-            CYBERTECH
+            PETCHRAPEEPHAT
           </Link>
           <button
             className="navbar-toggler scifi-toggler"
