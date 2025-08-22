@@ -59,9 +59,9 @@ export default function Page() {
         icon: 'success',
         title: '<h3>ปรับปรุงข้อมูลเรียบร้อยแล้ว</h3>',
         showConfirmButton: false,
-        timer: 2000
+        timer: 1500
         }).then(function () {
-        router.push('/register')
+        router.push('/Register')
       });
       setFirstname('')
       setFullname('')
