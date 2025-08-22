@@ -1,253 +1,141 @@
-'use client';
-
-import Link from 'next/link';
+'use client'
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import DeleteButton from './DeleteButton';
-import Swal from 'sweetalert2';
-
-// เพิ่ม error handling และ retry mechanism
-async function getUsers() {
-  try {
-    const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        // เพิ่ม authorization header ถ้าจำเป็น
-        // 'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      cache: 'no-store',
-    });
-    
-    if (!res.ok) {
-      // แยกประเภท error ตาม status code
-      if (res.status === 401) {
-        throw new Error('UNAUTHORIZED');
-      } else if (res.status === 403) {
-        throw new Error('FORBIDDEN');
-      } else if (res.status >= 500) {
-        throw new Error('SERVER_ERROR');
-      } else {
-        throw new Error(`HTTP_ERROR_${res.status}`);
-      }
-    }
-    
-    const data = await res.json();
-    
-    // ตรวจสอบ structure ของ response
-    if (!Array.isArray(data)) {
-      console.warn('API response is not an array:', data);
-      // ถ้า API return object ที่มี array nested
-      return data.data || data.users || [];
-    }
-    
-    return data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw error;
-  }
-}
-
+import Swal from 'sweetalert2'
+import { useParams, useRouter } from 'next/navigation'
 export default function Page() {
+  const router = useRouter()
+  const params = useParams();
+  const id = params.id;
+  const [firstname, setFirstname] = useState('')
+  const [fullname, setFullname] = useState('')
+  const [lastname, setLastname] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [checkingAuth, setCheckingAuth] = useState(true);
-  const [error, setError] = useState(null);
-  const router = useRouter();
+    useEffect(() => {
+        async function getUsers() {
+          try {
+            const res = await fetch(`https://backend-nextjs-virid.vercel.app/api/users/${id}`);
+            if (!res.ok) {
+              console.error('Failed to fetch data');
+              return;
+            }
+            const data = await res.json();
+            setItems(data);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'กรุณาเข้าสู่ระบบก่อนใช้งาน',
-        timer: 2500,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      }).then(() => {
-        router.push('/login');
-      });
-      return;
-    }
-
-    setCheckingAuth(false);
-
-    const fetchData = async () => {
-      try {
-        setError(null);
-        const data = await getUsers();
-        setItems(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-        
-        // Handle different types of errors
-        if (error.message === 'UNAUTHORIZED') {
-          // Token หมดอายุหรือไม่ถูกต้อง
-          localStorage.removeItem('token');
-          Swal.fire({
-            icon: 'warning',
-            title: 'Session หมดอายุ',
-            text: 'กรุณาเข้าสู่ระบบใหม่',
-          }).then(() => {
-            router.push('/login');
-          });
-        } else if (error.message === 'SERVER_ERROR') {
-          setError('เซิร์ฟเวอร์ขัดข้อง กรุณาลองใหม่ภายหลัง');
-        } else {
-          setError('ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่');
+        //กำหนดค่า state เริ่มต้นจาก API
+        if (data.length > 0) {
+          const user = data[0];
+          setFirstname(user.firstname || '');
+          setFullname(user.fullname || '');
+          setLastname(user.lastname || '');
+          setUsername(user.username || '');
+          setPassword(user.password || '');
         }
-      }
-    };
 
-    fetchData();
-
-    // Auto refresh data every 30 seconds (เพิ่มจาก 5 วินาที เพื่อลด server load)
-    const intervalId = setInterval(fetchData, 30000);
-
-    return () => clearInterval(intervalId);
-  }, [router]);
-
-  const handleDeleteUser = (deletedId) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== deletedId));
-  };
-
-  // Error state
-  if (error) {
-    return (
-      <div className="container mt-5">
-        <div className="alert alert-danger" role="alert">
-          <h4 className="alert-heading">เกิดข้อผิดพลาด</h4>
-          <p>{error}</p>
-          <button 
-            className="btn btn-outline-danger" 
-            onClick={() => window.location.reload()}
-          >
-            รีเฟรชหน้า
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Loading state
-  if (checkingAuth || loading) {
-    return (
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: '#fff',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 9999,
-        }}
-      >
-        <div
-          className="loader ease-linear rounded-full border-8 border-t-8 border-gray-300 h-16 w-16 mb-4"
-          style={{ borderTopColor: '#3b82f6', animation: 'spin 1s linear infinite' }}
-        ></div>
-        <h2 style={{ fontWeight: 'bold', color: '#333' }}>
-          {checkingAuth ? 'กำลังตรวจสอบสิทธิ์...' : 'กำลังโหลดข้อมูล...'}
-        </h2>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg);}
-            100% { transform: rotate(360deg);}
+          } catch (error) {
+            console.error('Error fetching data:', error);
           }
-          .loader {
-            border-top-color: #3b82f6;
-            animation: spin 1s linear infinite;
-          }
-        `}</style>
-      </div>
-    );
+        }
+     
+      getUsers();
+      //const interval  = setInterval(getUsers, 1000);
+      //return () => clearInterval(interval);
+    }, []);
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+    const res = await fetch('https://backend-nextjs-virid.vercel.app/api/users', {
+      method: 'PUT',
+      headers: {
+        Accept : 'application/json',
+      },
+      body: JSON.stringify({ id, firstname, fullname, lastname, username, password }),
+    })
+    const result = await res.json();
+    console.log(result);
+    if (res.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: '<h3>ปรับปรุงข้อมูลเรียบร้อยแล้ว</h3>',
+        showConfirmButton: false,
+        timer: 2000
+        }).then(function () {
+        router.push('/register')
+      });
+      setFirstname('')
+      setFullname('')
+      setLastname('')
+      setUsername('')
+      setPassword('')
+    } else {
+      Swal.fire({
+        title: 'Error!',
+        text: 'เกิดข้อผิดพลาด!',
+        icon: 'error',
+        confirmButtonText: 'ตกลง'
+      })
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'ข้อผิดพลาดเครือข่าย',
+      text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้',
+    })
   }
-
+  }
   return (
-    <>
-      <br /><br /><br /><br />
-      <div className="container" style={{ maxWidth: '98vw', position: 'relative' }}>
-        <div className="card">
-          <div className="card-header" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-            Users List
-            <button 
-              className="btn btn-primary btn-sm float-end"
-              onClick={() => window.location.reload()}
-            >
-              รีเฟรช
-            </button>
-          </div>
-
-          <div
-            className="card-body"
-            style={{
-              maxHeight: '70vh',
-              overflowY: 'auto',
-              overflowX: 'auto',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              position: 'relative',
-              minWidth: '1300px',
-            }}
-          >
-            {items.length === 0 && (
-              <p className="text-center">No users found.</p>
-            )}
-
-            {items.length > 0 && (
-              <table className="table table-striped table-hover">
-                <thead style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                  <tr>
-                    <th className="text-center">#</th>
-                    <th>Firstname</th>
-                    <th>Fullname</th>
-                    <th>Lastname</th>
-                    <th>Username</th>
-                    <th>Address</th>
-                    <th>Sex</th>
-                    <th>Birthday</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item) => (
-                    <tr key={item.id}>
-                      <td className="text-center">{item.id}</td>
-                      <td>{item.firstname || '-'}</td>
-                      <td>{item.fullname || '-'}</td>
-                      <td>{item.lastname || '-'}</td>
-                      <td>{item.username || '-'}</td>
-                      <td>{item.address || '-'}</td>
-                      <td>{item.sex || '-'}</td>
-                      <td>{item.birthday ? new Date(item.birthday).toLocaleDateString('th-TH') : '-'}</td>
-                      <td>
-                        <Link href={`/admin/users/edit/${item.id}`}>
-                          <button className="btn btn-warning btn-sm">Edit</button>
-                        </Link>
-                      </td>
-                      <td>
-                        <DeleteButton id={item.id} onDeleted={handleDeleteUser} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-      </div>
-      <br /><br />
-    </>
-  );
+    <div className="max-w-md mx-auto mt-10 p-4 border rounded">
+      <h1 className="text-xl font-bold mb-4">แก้ไขข้อมูลสมัครสมาชิก {id}</h1>
+      {items.map((item) => (
+      <form key={item.id} onSubmit={handleUpdateSubmit} className="space-y-3">
+       
+        <select name="firstname" onChange={(e) => setFirstname(e.target.value)} className="w-full border p-2 rounded" required>
+          <option value="{item.firstname}">{item.firstname}</option>
+          <option value="นาย">นาย</option>
+          <option value="นาง">นาง</option>
+          <option value="นางสาว">นางสาว</option>
+        </select>
+        <input
+          type="text"
+          placeholder="ชื่อ"
+          defaultValue={item.fullname}
+          onChange={(e) => setFullname(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="text"
+          placeholder="นามสกุล"
+          defaultValue={item.lastname}
+          onChange={(e) => setLastname(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
+                <input
+          type="text"
+          placeholder="username"
+          defaultValue={item.username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
+                <input
+          type="text"
+          placeholder="password"
+          defaultValue={item.password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-warning text-white p-2 rounded hover:bg-blue-600"
+        >
+          ปรับปรุงข้อมูล
+        </button>
+      </form>
+       ))} //ปิด items.map
+    </div>
+  )
 }
