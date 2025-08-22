@@ -8,7 +8,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState(null);
 
-  const showAlert = (type, title, text, timer = 3000) => {
+  const showAlert = (type, title, text, timer = 1500) => {
     setAlert({ type, title, text });
     setTimeout(() => setAlert(null), timer);
   };
