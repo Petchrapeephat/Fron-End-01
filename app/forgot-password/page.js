@@ -337,7 +337,7 @@ export default function ForgotPassword() {
             </form>
 
             <div className="scifi-links">
-              <Link href="/Login" className="scifi-link">
+              <Link href="/signin" className="scifi-link">
                 Back to Terminal
               </Link>
               <span className="scifi-separator">|</span>
