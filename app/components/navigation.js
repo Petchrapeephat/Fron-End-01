@@ -22,7 +22,7 @@ const handleSignOut = () => {
     <>
       <style jsx>{`
         .scifi-navbar {
-          background: linear-gradient(135deg, #818080ff 0%, #292828ff 50%, #000000ff 100%);
+          background: linear-gradient(135deg, #9da532ff 0%, #1909ffff 50%, #00ccffff 100%);
           border-bottom: 2px solid #ffffffc4;
           box-shadow: 0 0 50px rgba(255, 255, 255, 1);
           backdrop-filter: blur(10px);
