@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service - PETCHRAPEEPHAT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            background: linear-gradient(45deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ffff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 128, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .main-container {
+            padding: 120px 20px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            position: relative;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+            100% { text-shadow: 0 0 50px rgba(255, 0, 255, 0.7); }
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        .intro-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .intro-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #b0b8c4;
+        }
+
+        .highlight {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            font-weight: 600;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .service-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transform: rotate(-45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+            transform: rotate(-45deg) translate(50%, 50%);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #ff00ff;
+            box-shadow: 
+                0 20px 50px rgba(255, 0, 255, 0.4),
+                inset 0 0 30px rgba(255, 0, 255, 0.1);
+        }
+
+        .service-icon {
+            font-size: 4rem;
+            color: #00ffff;
+            margin-bottom: 1.5rem;
+            display: block;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .service-card:hover .service-icon {
+            color: #ff00ff;
+            transform: scale(1.2) rotateY(360deg);
+            text-shadow: 0 0 20px #ff00ff;
+        }
+
+        .service-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .service-title {
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+
+        .service-desc {
+            color: #b0b8c4;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .service-features {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .service-features li {
+            color: #b0b8c4;
+            padding: 0.3rem 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .service-features li::before {
+            content: '▶';
+            color: #00ffff;
+            position: absolute;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .service-features li::before {
+            color: #ff00ff;
+            transform: translateX(5px);
+        }
+
+        .service-button {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            border: none;
+            color: #000;
+            padding: 12px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Rajdhani', sans-serif;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin-top: auto;
+            align-self: center;
+        }
+
+        .service-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .service-button:hover::before {
+            left: 100%;
+        }
+
+        .service-button:hover {
+            background: linear-gradient(45deg, #ff00ff, #ff0080);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .premium-card {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0.6) 100%);
+            position: relative;
+        }
+
+        .premium-card::after {
+            content: 'PREMIUM';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        .premium-card .service-icon {
+            color: #ffd700;
+        }
+
+        .premium-card .service-title {
+            color: #ffd700;
+        }
+
+        .premium-card:hover {
+            border-color: #ffd700;
+            box-shadow: 
+                0 20px 50px rgba(255, 215, 0, 0.4),
+                inset 0 0 30px rgba(255, 215, 0, 0.1);
+        }
+
+        .premium-card:hover .service-icon {
+            color: #ffd700;
+            text-shadow: 0 0 20px #ffd700;
+        }
+
+        .premium-card:hover .service-title {
+            color: #ffd700;
+            text-shadow: 0 0 15px #ffd700;
+        }
+
+        .pricing-section {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ffff;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .price-tag {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00ffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-desc {
+            color: #b0b8c4;
+            font-size: 1.1rem;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .contact-cta {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+            animation: pulseGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(255, 0, 255, 0.3); }
+            100% { box-shadow: 0 0 40px rgba(255, 0, 255, 0.6); }
+        }
+
+        .cta-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            color: #ff00ff;
+            margin-bottom: 1rem;
+        }
+
+        .cta-text {
+            color: #b0b8c4;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #ff00ff, #8000ff);
+            border: none;
+            color: #fff;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Rajdhani', sans-serif;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+            transform: translateY(-3px);
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+
+    <div class="main-container">
+        <h1 class="page-title">SERVICE MATRIX</h1>
+        
+        <!-- Introduction -->
+        <div class="intro-card">
+            <div class="intro-text">
+                Access our comprehensive suite of <span class="highlight">quantum services</span>. 
+                Each protocol is designed to optimize your digital experience through advanced 
+                computational frameworks and neural enhancement technologies.
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="services-grid">
+            <!-- Neural Support Service -->
+            <div class="service-card">
+                <i class="bi bi-headset service-icon"></i>
+                <h3 class="service-title">Neural Support</h3>
+                <p class="service-desc">24/7 AI-assisted support through quantum communication channels</p>
+                <ul class="service-features">
+                    <li>Real-time consciousness monitoring</li>
+                    <li>Instant neural pathway repair</li>
+                    <li>Advanced troubleshooting protocols</li>
+                    <li>Emergency system recovery</li>
+                </ul>
+                <div class="pricing-section">
+                    <div class="price-tag">FREE</div>
+                    <div class="price-desc">Basic neural assistance</div>
+                </div>
+                <button class="service-button">ACTIVATE SUPPORT</button>
+            </div>
+
+            <!-- Global Network Service -->
+            <div class="service-card">
+                <i class="bi bi-globe service-icon"></i>
+                <h3 class="service-title">Global Network</h3>
+                <p class="service-desc">Access points across multiple dimensions and virtual realms</p>
+                <ul class="service-features">
+                    <li>Multi-dimensional connectivity</li>
+                    <li>Quantum tunneling protocols</li>
+                    <li>Parallel universe access</li>
+                    <li>Time-space navigation</li>
+                </ul>
+                <div class="pricing-section">
+                    <div class="price-tag">$99/month</div>
+                    <div class="price-desc">Standard dimension access</div>
+                </div>
+                <button class="service-button">EXPLORE NETWORK</button>
+            </div>
+
+            <!-- System Diagnostics -->
+            <div class="service-card">
+                <i class="bi bi-tools service-icon"></i>
+                <h3 class="service-title">System Diagnostics</h3>
+                <p class="service-desc">Advanced troubleshooting using predictive algorithms</p>
+                <ul class="service-features">
+                    <li>Quantum error detection</li>
+                    <li>Predictive failure analysis</li>
+                    <li>Automated system optimization</li>
+                    <li>Performance enhancement</li>
+                </ul>
+                <div class="pricing-section">
+                    <div class="price-tag">$49/scan</div>
+                    <div class="price-desc">Per diagnostic session</div>
+                </div>
+                <button class="service-button">RUN DIAGNOSTICS</button>
+            </div>
+
+            <!-- Data Migration Service -->
+            <div class="service-card">
+                <i class="bi bi-cloud-upload service-icon"></i>
+                <h3 class="service-title">Data Migration</h3>
+                <p class="service-desc">Seamless consciousness transfer and backup protocols</p>
+                <ul class="service-features">
+                    <li>Consciousness backup</li>
+                    <li>Memory transfer protocols</li>
+                    <li>Data integrity verification</li>
+                    <li>Cross-platform compatibility</li>
+                </ul>
+                <div class="pricing-section">
+                    <div class="price-tag">$199/TB</div>
+                    <div class="price-desc">Per terabyte of consciousness</div>
+                </div>
+                <button class="service-button">UPLOAD DATA</button>
+            </div>
+
+            <!-- Performance Boost Service -->
+            <div class="service-card premium-card">
+                <i class="bi bi-graph-up service-icon"></i>
+                <h3 class="service-title">Performance Boost</h3>
+                <p class="service-desc">Neural enhancement and cognitive amplification services</p>
+                <ul class="service-features">
+                    <li>IQ enhancement protocols</li>
+                    <li>Memory capacity expansion</li>
+                    <li>Processing speed optimization</li>
+                    <li>Consciousness acceleration</li>
+                </ul>
+                <div class="pricing-section">
+                    <div class="price-tag">$499/month</div>
+                    <div class="price-desc">Premium neural enhancement</div>
+                </div>
+                <button class="service-button">ENHANCE PERFORMANCE</button>
+            </div>
+
+            <!-- Security Protocols -->
+            <div class="service-card premium-card">
+                <i class="bi bi-shield-check service-icon"></i>
+                <h3 class="service-title">Security Protocols</h3>
+                <p class="service-desc">Military-grade protection against digital intrusions</p>
+                <ul class="service-features">
+                    <li>Quantum encryption shields</li>
+                    <li>Neural firewall protection</li>
+                    <li>Consciousness authentication</li>
+                    <li>Anti-virus neural scanning</li>
+                </ul>
+                <div class="pricing-section">
+                    <div class="price-tag">$299/month</div>
+                    <div class="price-desc">Ultimate security package</div>
+                </div>
+                <button class="service-button">SECURE SYSTEM</button>
+            </div>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="contact-cta">
+            <h3 class="cta-title">NEED CUSTOM NEURAL SOLUTIONS?</h3>
+            <p class="cta-text">
+                Our quantum engineers can develop personalized consciousness protocols 
+                tailored to your specific digital enhancement requirements.
+            </p>
+            <a href="contact.html" class="cta-button">CONTACT SPECIALISTS</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 40;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                
+                const colors = ['#00ffff', '#ff00ff', '#0080ff', '#ffd700'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = randomColor;
+                particle.style.boxShadow = `0 0 10px ${randomColor}`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Service card click handlers
+        document.querySelectorAll('.service-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Create a loading effect
+                const originalText = this.textContent;
+                this.textContent = 'PROCESSING...';
+                this.disabled = true;
+                
+                // Simulate service activation
+                setTimeout(() => {
+                    this.textContent = 'ACTIVATED ✓';
+                    this.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+                    this.style.boxShadow = '0 0 25px rgba(0, 255, 0, 0.8)';
+                    
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.disabled = false;
+                        this.style.background = '';
+                        this.style.boxShadow = '';
+                    }, 2000);
+                }, 1500);
+            });
+        });
+
+        // Card hover sound effect (visual feedback)
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.animation = 'none';
+                setTimeout(() => {
+                    this.style.animation = 'cardPulse 0.3s ease-out';
+                }, 10);
+            });
+        });
+
+        // Add hover animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes cardPulse {
+                0% { transform: translateY(-10px) scale(1.02); }
+                50% { transform: translateY(-12px) scale(1.03); }
+                100% { transform: translateY(-10px) scale(1.02); }
+            }
+            
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // Animate cards on scroll
+            const observerOptions = {
+                threshold: 0.2,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                        }, index * 100);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all service cards
+            document.querySelectorAll('.service-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                observer.observe(card);
+            });
+        });
+
+        // Add glitch effect to title
+        setInterval(() => {
+            const title = document.querySelector('.page-title');
+            if (Math.random() > 0.95) {
+                title.style.transform = 'translateX(' + (Math.random() * 6 - 3) + 'px)';
+                setTimeout(() => {
+                    title.style.transform = 'translateX(0)';
+                }, 100);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
