@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - PETCHRAPEEPHAT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            background: linear-gradient(45deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ffff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 128, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .main-container {
+            padding: 120px 20px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            position: relative;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+            100% { text-shadow: 0 0 50px rgba(255, 0, 255, 0.7); }
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            box-shadow: 0 0 10px #00ffff;
+            animation: lineGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes lineGlow {
+            0% { box-shadow: 0 0 10px #00ffff; }
+            100% { box-shadow: 0 0 20px #ff00ff; }
+        }
+
+        .sci-fi-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sci-fi-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff, #ff00ff);
+            z-index: -1;
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sci-fi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 10px 40px rgba(0, 255, 255, 0.4),
+                inset 0 0 30px rgba(0, 255, 255, 0.2);
+        }
+
+        .sci-fi-card:hover::before {
+            opacity: 0.7;
+            animation: borderPulse 2s infinite;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .intro-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #b0b8c4;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .highlight {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 2rem 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-item:hover::before {
+            left: 100%;
+        }
+
+        .stat-item:hover {
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00ffff;
+            font-family: 'Orbitron', monospace;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover .stat-number {
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+
+        .stat-label {
+            color: #b0b8c4;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .feature-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #00ffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            transition: width 0.5s ease;
+        }
+
+        .feature-card:hover::after {
+            width: 100%;
+        }
+
+        .feature-card:hover {
+            border-color: #ff00ff;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #00ffff;
+            margin-bottom: 1rem;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            color: #ff00ff;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-title {
+            color: #00ffff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .feature-desc {
+            color: #b0b8c4;
+            line-height: 1.6;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff);
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: calc(50% + 30px);
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline-item:nth-child(even) {
+            justify-content: flex-start;
+            padding-left: calc(50% + 30px);
+            padding-right: 0;
+        }
+
+        .timeline-content {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            max-width: 300px;
+            position: relative;
+        }
+
+        .timeline-date {
+            color: #ff00ff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            color: #00ffff;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-desc {
+            color: #b0b8c4;
+            font-size: 0.9rem;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-item {
+                padding-right: 0;
+                padding-left: 60px;
+                justify-content: flex-start;
+            }
+            
+            .timeline-item:nth-child(even) {
+                padding-left: 60px;
+                padding-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+
+    <div class="main-container">
+        <h1 class="page-title">SYSTEM PROFILE</h1>
+        
+        <!-- Introduction -->
+        <div class="sci-fi-card">
+            <div class="intro-text">
+                <span class="highlight">PETCHRAPEEPHAT</span> represents the convergence of 
+                human innovation and artificial intelligence. Our mission transcends conventional 
+                boundaries, creating pathways between digital consciousness and human potential.
+                <br><br>
+                Through advanced neural mapping and quantum processing, we've developed a 
+                revolutionary platform that bridges the gap between imagination and reality.
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">∞</span>
+                <div class="stat-label">Quantum Processes</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">99.9%</span>
+                <div class="stat-label">System Uptime</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <div class="stat-label">Neural Monitoring</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">2045</span>
+                <div class="stat-label">Future Ready</div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="sci-fi-card">
+                    <h3 class="highlight mb-3">CORE SYSTEMS</h3>
+                    <div class="feature-section">
+                        <div class="feature-card">
+                            <i class="bi bi-cpu feature-icon"></i>
+                            <h4 class="feature-title">Quantum Neural Networks</h4>
+                            <p class="feature-desc">Advanced processing using quantum entanglement principles</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="bi bi-hdd feature-icon"></i>
+                            <h4 class="feature-title">Holographic Storage</h4>
+                            <p class="feature-desc">Multi-dimensional data storage with infinite capacity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="sci-fi-card">
+                    <h3 class="highlight mb-3">CAPABILITIES</h3>
+                    <div class="feature-section">
+                        <div class="feature-card">
+                            <i class="bi bi-lightning feature-icon"></i>
+                            <h4 class="feature-title">Real-time Analysis</h4>
+                            <p class="feature-desc">Instantaneous data processing at light speed</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="bi bi-graph-up feature-icon"></i>
+                            <h4 class="feature-title">Predictive Modeling</h4>
+                            <p class="feature-desc">AI-powered future scenario generation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Statement -->
+        <div class="sci-fi-card mt-4">
+            <h3 class="highlight text-center mb-3">MISSION DIRECTIVE</h3>
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <i class="bi bi-bullseye feature-icon"></i>
+                    <h5 class="highlight">INNOVATE</h5>
+                    <p class="text-muted">Push the boundaries of what's possible through cutting-edge technology</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <i class="bi bi-people feature-icon"></i>
+                    <h5 class="highlight">CONNECT</h5>
+                    <p class="text-muted">Bridge human consciousness with digital intelligence</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <i class="bi bi-rocket feature-icon"></i>
+                    <h5 class="highlight">EVOLVE</h5>
+                    <p class="text-muted">Continuously adapt and enhance our neural capabilities</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                
+                const colors = ['#00ffff', '#ff00ff', '#0080ff'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = randomColor;
+                particle.style.boxShadow = `0 0 10px ${randomColor}`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Counter animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = counter.textContent;
+                if (target === '∞' || target.includes('%') || target.includes('/')) return;
+                
+                const targetNum = parseInt(target);
+                let current = 0;
+                const increment = targetNum / 100;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= targetNum) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current);
+                    }
+                }, 20);
+            });
+        }
+
+        // Glitch effect
+        function addGlitchEffect() {
+            const title = document.querySelector('.page-title');
+            setInterval(() => {
+                if (Math.random() > 0.95) {
+                    title.style.transform = 'translateX(' + (Math.random() * 6 - 3) + 'px)';
+                    setTimeout(() => {
+                        title.style.transform = 'translateX(0)';
+                    }, 100);
+                }
+            }, 2000);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            setTimeout(animateCounters, 500);
+            addGlitchEffect();
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.6s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards
+        document.querySelectorAll('.sci-fi-card, .stat-item, .feature-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            observer.observe(el);
+        });
+
+        // Add fadeIn animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
