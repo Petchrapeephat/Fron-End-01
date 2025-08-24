@@ -98,14 +98,14 @@ export default function Register() {
         icon: 'success',
         title: 'สมัครสมาชิกสำเร็จ!',
         text: 'กรุณาเข้าสู่ระบบด้วยข้อมูลที่สมัครใหม่',
-        timer: 2000,
+        timer: 1500,
         showConfirmButton: false,
         background: 'rgba(0, 0, 0, 0.9)',
         color: '#00ffff'
       })
 
       // ✅ ไปหน้า login พร้อม pre-fill username
-      router.push(`/signin?username=${encodeURIComponent(username)}`)
+      window.location.href = "/signin";
 
     } catch (err) {
       console.error('Registration error:', err)
